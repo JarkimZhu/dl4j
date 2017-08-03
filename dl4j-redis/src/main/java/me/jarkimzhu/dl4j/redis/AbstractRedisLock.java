@@ -56,7 +56,11 @@ public abstract class AbstractRedisLock implements Lock {
         String token = MathUtils.randomInt(6);
         long sysTime = System.nanoTime();
         StringLockValue value = new StringLockValue(token, sysTime);
-        return cache.putIfNotExists(lockName, value.getValue());
+        if(cache.putIfNotExists(lockName, value.getValue())) {
+            lockValue.set(value);
+            return true;
+        }
+        return false;
     }
 
     @Override
